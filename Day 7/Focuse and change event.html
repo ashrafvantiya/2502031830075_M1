@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus and Change Events</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h2{
+            color: red;
+        }
+
+        input, select{
+            padding: 8px;
+            margin: 10px 0;
+            width: 220px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Focus and Change Events</h2>
+
+    <!-- Product Selection -->
+    <label>Select Product :</label>
+
+    <select id="product">
+        <option value="44999">AC</option>
+        <option value="21999">TV</option>
+        <option value="15999">Refrigerator</option>
+        <option value="100000">Laptop</option>
+        <option value="12999">Mobail</option>
+    </select>
+
+    <br><br>
+
+    <!-- Net Price -->
+    <label>Net Price :</label>
+    <input type="text" id="price">
+
+    <br><br>
+
+    <!-- Quantity -->
+    <label>Quantity :</label>
+    <input type="text" id="quantity">
+
+    <br><br>
+
+    <!-- Total Amount -->
+    <label>Total Amount :</label>
+    <input type="text" id="amount">
+
+    <script>
+        // Get elements
+        let product = document.getElementById("product");
+        let price = document.getElementById("price");
+        let quantity = document.getElementById("quantity");
+        let amount = document.getElementById("amount");
+
+        // Change Event
+        product.addEventListener("change", function () {
+            price.value = product.value;
+            calculateAmount();
+        });
+
+        // Focus Event
+        quantity.addEventListener("focus", function () {
+            this.style.backgroundColor = "lightyellow";
+        });
+
+        // Blur Event
+        quantity.addEventListener("blur", function () {
+            this.style.backgroundColor = "white";
+        });
+
+        // Input Event
+        quantity.addEventListener("input", calculateAmount);
+
+        // Function to calculate total amount
+        function calculateAmount() {
+            let p = parseInt(price.value) || 0;
+            let q = parseInt(quantity.value) || 0;
+
+            amount.value = p * q;
+        }
+
+        // Default Values
+        price.value = product.value;
+        quantity.value = 1;
+        calculateAmount();
+    </script>
+
+</body>
+</html>
