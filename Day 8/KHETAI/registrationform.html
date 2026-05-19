@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KhetAI — Free Register Karo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #0d3d1e;
+    --green-mid: #1a6b35;
+    --green-bright: #2ecc71;
+    --gold: #f5c518;
+    --cream: #faf7f0;
+    --white: #ffffff;
+    --text-muted: #6b8a72;
+    --border: #d5e8d8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream); min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* TOP NAV */
+  .top-nav {
+    background: var(--green-dark); padding: 1rem 5%;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--green-bright); text-decoration: none;
+  }
+  .logo span { color: var(--gold); }
+
+  .login-link {
+    color: rgba(255,255,255,0.7); font-size: 0.88rem; text-decoration: none;
+  }
+  .login-link strong { color: var(--green-bright); }
+
+  /* MAIN AREA */
+  .main { flex: 1; display: grid; grid-template-columns: 1fr 480px; }
+
+  /* LEFT — PROGRESS + BENEFITS */
+  .reg-left {
+    background: linear-gradient(160deg, var(--green-dark) 0%, #0a2e12 100%);
+    padding: 4rem 3rem; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .reg-left::after {
+    content: '🌱'; font-size: 12rem; position: absolute;
+    bottom: -2rem; right: -2rem; opacity: 0.06;
+  }
+
+  .steps-progress { margin-bottom: 3rem; position: relative; z-index: 2; }
+  .steps-progress h3 {
+    color: rgba(255,255,255,0.5); font-size: 0.78rem; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 1.5rem; font-weight: 500;
+  }
+
+  .progress-bar-outer {
+    height: 4px; background: rgba(255,255,255,0.1);
+    border-radius: 50px; margin-bottom: 2rem; overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%; background: var(--green-bright);
+    border-radius: 50px; transition: width 0.5s ease;
+    width: 33%;
+  }
+
+  .step-indicators { display: flex; flex-direction: column; gap: 1rem; }
+
+  .step-ind {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s;
+  }
+
+  .step-ind.active {
+    background: rgba(46,204,113,0.1);
+    border-color: rgba(46,204,113,0.25);
+  }
+
+  .step-ind.done {
+    background: rgba(46,204,113,0.05);
+    border-color: rgba(46,204,113,0.1);
+  }
+
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.3); font-size: 0.75rem; font-weight: 700;
+    flex-shrink: 0; transition: all 0.3s;
+  }
+
+  .step-ind.active .step-dot {
+    background: var(--green-bright); border-color: var(--green-bright);
+    color: var(--green-dark);
+  }
+
+  .step-ind.done .step-dot {
+    background: rgba(46,204,113,0.2); border-color: var(--green-bright);
+    color: var(--green-bright);
+  }
+
+  .step-label { color: rgba(255,255,255,0.4); font-size: 0.82rem; }
+  .step-ind.active .step-label { color: white; font-weight: 500; }
+  .step-ind.done .step-label { color: rgba(255,255,255,0.6); }
+
+  .benefits {
+    position: relative; z-index: 2;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; padding: 1.5rem;
+  }
+
+  .benefits h4 { color: var(--green-bright); font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+
+  .benefit-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 0.7rem;
+  }
+
+  .benefit-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* RIGHT — FORM */
+  .reg-right {
+    background: white; padding: 4rem 3rem;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .step-form { display: none; }
+  .step-form.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
+
+  .step-header { margin-bottom: 2rem; }
+  .step-number {
+    font-size: 0.75rem; font-weight: 700; color: var(--green-mid);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .step-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem; font-weight: 900; color: var(--green-dark); margin-bottom: 0.5rem;
+  }
+  .step-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-row.single { grid-template-columns: 1fr; }
+
+  .form-group { margin-bottom: 1.1rem; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--green-dark); margin-bottom: 0.45rem; }
+
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; }
+
+  .form-input {
+    width: 100%; padding: 0.8rem 0.9rem 0.8rem 2.6rem;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: #fafafa; font-size: 0.9rem; color: var(--green-dark);
+    outline: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .form-input:focus { border-color: var(--green-bright); background: white; box-shadow: 0 0 0 3px rgba(46,204,113,0.1); }
+  .form-input::placeholder { color: #b0c4b5; }
+
+  select.form-input { cursor: pointer; }
+
+  /* Crop selector */
+  .crop-selector { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .crop-option {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.85rem; border: 1.5px solid var(--border);
+    border-radius: 50px; cursor: pointer; font-size: 0.82rem;
+    font-weight: 500; color: var(--text-muted); transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif; background: #fafafa;
+  }
+
+  .crop-option:hover { border-color: var(--green-bright); color: var(--green-mid); }
+  .crop-option.selected { background: rgba(46,204,113,0.12); border-color: var(--green-bright); color: var(--green-dark); }
+
+  /* OTP */
+  .otp-row { display: flex; gap: 0.6rem; justify-content: center; margin: 1.5rem 0; }
+  .otp-box {
+    width: 52px; height: 58px; border: 1.5px solid var(--border);
+    border-radius: 12px; text-align: center; font-size: 1.4rem;
+    font-weight: 700; color: var(--green-dark); outline: none;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+    background: #fafafa;
+  }
+  .otp-box:focus { border-color: var(--green-bright); background: white; box-shadow: 0 0 0 3px rgba(46,204,113,0.1); }
+
+  .otp-info { text-align: center; margin-bottom: 0.5rem; }
+  .otp-info p { color: var(--text-muted); font-size: 0.85rem; }
+  .otp-info strong { color: var(--green-dark); }
+  .otp-resend { color: var(--green-mid); font-size: 0.82rem; cursor: pointer; text-decoration: underline; }
+
+  /* Buttons */
+  .btn-next, .btn-submit {
+    width: 100%; padding: 1rem;
+    background: var(--green-dark); color: white;
+    border: none; border-radius: 12px; font-size: 0.95rem;
+    font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.25s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .btn-next:hover, .btn-submit:hover { background: var(--green-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,61,30,0.2); }
+
+  .btn-back {
+    background: none; border: 1.5px solid var(--border); color: var(--text-muted);
+    padding: 0.7rem 1.5rem; border-radius: 12px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+    transition: all 0.2s; margin-top: 0.75rem; width: 100%;
+  }
+  .btn-back:hover { border-color: var(--green-mid); color: var(--green-mid); }
+
+  .terms { font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem; text-align: center; line-height: 1.5; }
+  .terms a { color: var(--green-mid); text-decoration: none; }
+
+  /* Success screen */
+  .success-screen {
+    text-align: center; padding: 2rem;
+  }
+
+  .success-icon { font-size: 4rem; margin-bottom: 1.5rem; animation: bounce 0.5s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; color: var(--green-dark); margin-bottom: 0.75rem;
+  }
+
+  .success-screen p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin-bottom: 2rem; }
+
+  @media(max-width:768px){ .main{grid-template-columns:1fr;} .reg-left{display:none;} .form-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="logo">Khet<span>AI</span></a>
+  <a href="login.html" class="login-link">Pehle se account hai? <strong>Login karo →</strong></a>
+</nav>
+
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="reg-left">
+    <div class="steps-progress">
+      <h3>Registration Progress</h3>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <div class="step-indicators">
+        <div class="step-ind active" id="si-1">
+          <div class="step-dot" id="sd-1">1</div>
+          <div>
+            <div class="step-label">Aapki Personal Jaankari</div>
+          </div>
+        </div>
+        <div class="step-ind" id="si-2">
+          <div class="step-dot" id="sd-2">2</div>
+          <div>
+            <div class="step-label">Khet Ki Details</div>
+          </div>
+        </div>
+        <div class="step-ind" id="si-3">
+          <div class="step-dot" id="sd-3">3</div>
+          <div>
+            <div class="step-label">OTP Verify Karo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="benefits">
+      <h4>🆓 Free Mein Milega</h4>
+      <div class="benefit-item"><span class="benefit-icon">🛰️</span> Satellite Soil Analysis — ₹2000/yr value</div>
+      <div class="benefit-item"><span class="benefit-icon">🌦️</span> Hyperlocal 15-day weather forecast</div>
+      <div class="benefit-item"><span class="benefit-icon">🐛</span> AI pest detection — unlimited scans</div>
+      <div class="benefit-item"><span class="benefit-icon">💰</span> Live mandi price tracking</div>
+      <div class="benefit-item"><span class="benefit-icon">📋</span> Government scheme alerts</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="reg-right">
+
+    <!-- STEP 1 — Personal Info -->
+    <div class="step-form active" id="step-1">
+      <div class="step-header">
+        <div class="step-number">Kadam 1 / 3</div>
+        <h2>Apna Parichay Do</h2>
+        <p>Bilkul free. Koi hidden charge nahi.</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Pehla Naam</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" class="form-input" placeholder="Ramesh">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upnaam (Surname)</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" class="form-input" placeholder="Singh">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" class="form-input" placeholder="+91 98765 43210">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label class="form-label">Password Banao</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="form-input" placeholder="Kam se kam 8 characters">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <div class="input-wrap">
+            <span class="input-icon">🗺️</span>
+            <select class="form-input">
+              <option value="">State chunein</option>
+              <option>Punjab</option>
+              <option>Uttar Pradesh</option>
+              <option>Haryana</option>
+              <option>Rajasthan</option>
+              <option>Maharashtra</option>
+              <option>Madhya Pradesh</option>
+              <option>Gujarat</option>
+              <option>Karnataka</option>
+              <option>Tamil Nadu</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">District</label>
+          <div class="input-wrap">
+            <span class="input-icon">📍</span>
+            <input type="text" class="form-input" placeholder="Ludhiana">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-next" onclick="nextStep(1)">Aage Badho → Khet Ki Details</button>
+
+      <p class="terms">Aage badhne par aap hamare <a href="#">Terms of Service</a> aur <a href="#">Privacy Policy</a> se sahmat hain.</p>
+    </div>
+
+    <!-- STEP 2 — Farm Info -->
+    <div class="step-form" id="step-2">
+      <div class="step-header">
+        <div class="step-number">Kadam 2 / 3</div>
+        <h2>Aapke Khet Ki Baat</h2>
+        <p>AI better advice dega jab use aapki zameen ke baare mein pata ho.</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Zameen Ka Aakar (Acres)</label>
+          <div class="input-wrap">
+            <span class="input-icon">📐</span>
+            <input type="number" class="form-input" placeholder="e.g. 5">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mitti Ka Prakar</label>
+          <div class="input-wrap">
+            <span class="input-icon">🌍</span>
+            <select class="form-input">
+              <option value="">Chunein</option>
+              <option>Alluvial (Domat)</option>
+              <option>Black (Kali Mitti)</option>
+              <option>Red (Lal Mitti)</option>
+              <option>Sandy (Reti)</option>
+              <option>Clayey (Chiknee)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Main Fasal Kaun Si Ugaate Ho?</label>
+        <div class="crop-selector" id="cropSelector">
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🌾 Gehun</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🌽 Makka</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🍚 Chawal</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🧅 Pyaaz</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🥔 Aalu</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🍅 Tamatar</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🌱 Soyabean</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🍬 Ganna</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🌻 Surajmukhi</button>
+          <button type="button" class="crop-option" onclick="toggleCrop(this)">🧄 Lahsun</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Sinchai Ka Zariya</label>
+        <div class="input-wrap">
+          <span class="input-icon">💧</span>
+          <select class="form-input">
+            <option value="">Chunein</option>
+            <option>Borewell</option>
+            <option>Canal (Nahar)</option>
+            <option>Rainwater only</option>
+            <option>Drip Irrigation</option>
+            <option>Sprinkler</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-next" onclick="nextStep(2)">Aage Badho → OTP Verify</button>
+      <button class="btn-back" onclick="prevStep(2)">← Wapas Jao</button>
+    </div>
+
+    <!-- STEP 3 — OTP -->
+    <div class="step-form" id="step-3">
+      <div class="step-header">
+        <div class="step-number">Kadam 3 / 3</div>
+        <h2>OTP Verify Karo</h2>
+        <p>Last step! Mobile par OTP aaya hoga.</p>
+      </div>
+
+      <div class="otp-info">
+        <p>OTP bheja gaya hai: <strong>+91 98765 43210</strong></p>
+      </div>
+
+      <div class="otp-row">
+        <input type="text" class="otp-box" maxlength="1" oninput="otpMove(this, null, 'o2')">
+        <input type="text" class="otp-box" id="o2" maxlength="1" oninput="otpMove(this, 'o1', 'o3')">
+        <input type="text" class="otp-box" id="o3" maxlength="1" oninput="otpMove(this, 'o2', 'o4')">
+        <input type="text" class="otp-box" id="o4" maxlength="1" oninput="otpMove(this, 'o3', 'o5')">
+        <input type="text" class="otp-box" id="o5" maxlength="1" oninput="otpMove(this, 'o4', 'o6')">
+        <input type="text" class="otp-box" id="o6" maxlength="1" oninput="otpMove(this, 'o5', null)">
+      </div>
+
+      <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-bottom:1.5rem;">OTP nahi aaya? <span class="otp-resend" onclick="resendOTP()">Dobara bhejo (58s)</span></p>
+
+      <button class="btn-submit" onclick="submitForm()">✅ Account Banao — Free Shuru Karo!</button>
+      <button class="btn-back" onclick="prevStep(3)">← Wapas Jao</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="step-form" id="step-success">
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <h2>Swagat Hai, Kisan Ji!</h2>
+        <p>Aapka KhetAI account ban gaya hai. Ab aapke khet ko milega — AI ka power, satellite ka data, aur 24/7 expert support.</p>
+        <a href="dashboard.html" class="btn-next" style="text-decoration:none;display:flex;">
+          🌾 Dashboard Dekho →
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+
+  function nextStep(from) {
+    document.getElementById(`step-${from}`).classList.remove('active');
+    const next = from + 1;
+    if (next <= 3) {
+      document.getElementById(`step-${next}`).classList.add('active');
+    }
+    currentStep = next;
+    updateProgress();
+  }
+
+  function prevStep(from) {
+    document.getElementById(`step-${from}`).classList.remove('active');
+    const prev = from - 1;
+    document.getElementById(`step-${prev}`).classList.add('active');
+    currentStep = prev;
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const pcts = { 1: '33%', 2: '66%', 3: '100%' };
+    document.getElementById('progressBar').style.width = pcts[currentStep] || '100%';
+
+    [1,2,3].forEach(i => {
+      const si = document.getElementById(`si-${i}`);
+      si.classList.remove('active','done');
+      if (i === currentStep) si.classList.add('active');
+      else if (i < currentStep) si.classList.add('done');
+    });
+  }
+
+  function toggleCrop(el) { el.classList.toggle('selected'); }
+
+  function otpMove(el, prevId, nextId) {
+    if (el.value.length >= 1 && nextId) {
+      document.getElementById(nextId).focus();
+    }
+  }
+
+  function resendOTP() {
+    alert('OTP dobara bheja gaya!');
+  }
+
+  function submitForm() {
+    document.getElementById('step-3').classList.remove('active');
+    document.getElementById('step-success').classList.add('active');
+    document.getElementById('progressBar').style.width = '100%';
+  }
+</script>
+</body>
+</html>
